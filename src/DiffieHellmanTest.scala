@@ -2,30 +2,29 @@
  * Created by viraj on 2/25/15.
  */
 object DiffieHellmanTest extends App {
-  val p = DiffieHellman.randomPrime(128)
-  val g = 5
 
-  // alice, bob, and carol agree to use prime number p and base g
+  // p and g taken from here:
+  val p = DiffieHellman.randomPrime(1024)
+  val g = 5 // 5 is a primitive root modulo 23
+
+  // all operations are taken to be modulo p
+  // parties agree to use prime number p and base g
+  val numParties = 3
   var alice = new DiffieHellman(p, g)
   var bob = new DiffieHellman(p, g)
   var carol = new DiffieHellman(p, g)
+  var participants = Array(alice, bob, carol)
 
-  // alice chooses a secret integer a
-  alice.generatePrivateKey()
-  // and sends bob A = g^a mod p
-  bob.peerPublicKey = alice.getPublicKey
+  // share all public keys with all participants,
+  DiffieHellman.doKeyExchange(participants)
 
-  // bob chooses a secret integer b
-  bob.generatePrivateKey()
-  // and sends alice B = g^b mod p
-  alice.peerPublicKey = bob.getPublicKey
-
-  // alice computes s = B^a mod p
-  // bob computes s = A^b mod p
-  // alice and bob now share a secret
   println("Alice's secret: " + alice.sharedSecret)
   println("Bobs's secret : " + bob.sharedSecret)
-  if (alice.sharedSecret == bob.sharedSecret) {
-    println("Alice and Bob share a secret")
+  println("Carol's secret: " + carol.sharedSecret)
+  if (alice.sharedSecret == bob.sharedSecret
+      && bob.sharedSecret == carol.sharedSecret) {
+    println("Alice, Bob, and Carol share a secret")
+  } else {
+    println("uhh, something went wrong")
   }
 }
