@@ -2,22 +2,22 @@
  * Created by viraj on 2/25/15.
  */
 object DiffieHellmanTest extends App {
-
-  // p and g taken from here:
+  // parties agree to use shared prime number p and base g
   val p = DiffieHellman.randomPrime(1024)
   val g = 5 // 5 is a primitive root modulo 23
 
-  // all operations are taken to be modulo p
-  // parties agree to use prime number p and base g
-  val numParties = 3
+  // initialize participants
   var alice = new DiffieHellman(p, g)
   var bob = new DiffieHellman(p, g)
   var carol = new DiffieHellman(p, g)
+
+  // add to an array for convenience
   var participants = Array(alice, bob, carol)
 
-  // share all public keys with all participants,
+  // share all public keys with all participants
   DiffieHellman.doKeyExchange(participants)
 
+  // print some tasty output
   println("Alice's secret: " + alice.sharedSecret)
   println("Bobs's secret : " + bob.sharedSecret)
   println("Carol's secret: " + carol.sharedSecret)
@@ -25,6 +25,6 @@ object DiffieHellmanTest extends App {
       && bob.sharedSecret == carol.sharedSecret) {
     println("Alice, Bob, and Carol share a secret")
   } else {
-    println("uhh, something went wrong")
+    println("Uhh, something went wrong")
   }
 }
