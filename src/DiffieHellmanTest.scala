@@ -10,9 +10,10 @@ object DiffieHellmanTest extends App {
   var alice = new DiffieHellman(p, g)
   var bob = new DiffieHellman(p, g)
   var carol = new DiffieHellman(p, g)
+  var david = new DiffieHellman(p, g)
 
   // add to an array for convenience
-  var participants = Array(alice, bob, carol)
+  var participants = Array(alice, bob, carol, david)
 
   // share all public keys with all participants
   DiffieHellman.doKeyExchange(participants)
@@ -21,9 +22,11 @@ object DiffieHellmanTest extends App {
   println("Alice's secret: " + alice.sharedSecret)
   println("Bobs's secret : " + bob.sharedSecret)
   println("Carol's secret: " + carol.sharedSecret)
+  println("David's secret: " + david.sharedSecret)
   if (alice.sharedSecret == bob.sharedSecret
-      && bob.sharedSecret == carol.sharedSecret) {
-    println("Alice, Bob, and Carol share a secret")
+      && bob.sharedSecret == carol.sharedSecret
+      && carol.sharedSecret == david.sharedSecret) {
+    println("Alice, Bob, Carol, and David share a secret")
   } else {
     println("Uhh, something went wrong")
   }
