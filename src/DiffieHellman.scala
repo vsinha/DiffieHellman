@@ -16,6 +16,9 @@ class DiffieHellman (val p: BigInt, val g: Int, val name: String) {
   // initialize to public key
   var secret: BigInt = publicKey
 
+  def resetSecret(): Unit =
+    secret = publicKey
+
   // take what we have already and raise it to
   // the power of our private key modulo p.
   def combineSecretWithPrivateKey(): Unit =
@@ -36,6 +39,10 @@ object DiffieHellman {
   // share all public keys with all participants,
   // for any number of participants
   def doKeyExchange(participants: List[DiffieHellman]): Boolean = {
+
+    // reset everything
+    participants.foreach(p => p.resetSecret())
+
     for (i <- 1 until participants.length) {
 
       // get and rotate the intermediates
