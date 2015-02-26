@@ -16,8 +16,10 @@ class DiffieHellman (val p: BigInt, val g: Int, val name: String) {
   // initialize to public key
   var secret: BigInt = publicKey
 
-  // take what we have already and raise it to the power of our private key modulo p.
-  def combineSecretWithPrivateKey(): Unit = secret = expMod(secret, privateKey, p)
+  // take what we have already and raise it to
+  // the power of our private key modulo p.
+  def combineSecretWithPrivateKey(): Unit =
+    secret = expMod(secret, privateKey, p)
 
   // calculates a^b mod c
   private def expMod(a: BigInt, b: BigInt, c: BigInt): BigInt = a.modPow(b, c)
