@@ -14,7 +14,7 @@ class DiffieHellman (val p: BigInt, val g: Int) {
   // public key is g^privateKey mod p
   def publicKey: BigInt = {
     expMod(g, privateKey, p)
-  }g
+  }
 
   // multiply all the keys in the group of participants,
   // starting with our own
