@@ -9,34 +9,33 @@ class DiffieHellman (val p: BigInt, val g: Int) {
   // private key is generated once and for always
   // (re-generating the private key breaks the algorithm)
   private val privateKey: BigInt = this.random(1024)
-
   var peerPublicKeys: Array[BigInt] = Array[BigInt]()
 
+  // public key is g^privateKey mod p
   def publicKey: BigInt = {
-    // public key is g^privateKey mod p
     expMod(g, privateKey, p)
-  }
+  }g
 
+  // multiply all the keys in the group of participants,
+  // starting with our own
   def sharedSecret: BigInt = {
-    // multiply all the keys in the group of participants,
-    // starting with our own
     this.publicKey * peerPublicKeys.foldLeft(1: BigInt)((a, b) => a * b)
   }
 
+  // append the new key to the list of keys we have
+  // this operation should really only be undertaken by the
+  // DiffieHellman.doKeyExchange function.
   private def addPeerPublicKey(key: BigInt) = {
-    // append the new key to the list of keys we have
-    // this operation should really only be undertaken by the
-    // DiffieHellman.doKeyExchange function.
     peerPublicKeys :+= key
-  }
-
-  private def random(n: Int): BigInt = {
-    BigInt(n, new Random())
   }
 
   // calculates a^b mod c
   private def expMod(a: BigInt, b: BigInt, c: BigInt): BigInt = {
     a.modPow(b, c)
+  }
+
+  private def random(n: Int): BigInt = {
+    BigInt(n, new Random())
   }
 }
 
