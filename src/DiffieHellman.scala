@@ -4,32 +4,22 @@
 
 import scala.util.Random
 
-class DiffieHellman (val p: BigInt, val g: Int) {
+class DiffieHellman (val p: BigInt, val g: Int, val name: String) {
 
   // private key is generated once and for always
   // (re-generating the private key breaks the algorithm)
   private val privateKey: BigInt = this.random(1024)
 
-  // initialize the list in which we will store all our shared keys
-  var peerPublicKeys: Array[BigInt] = resetKeyList
-  def resetKeyList = Array[BigInt]()
-
   // public key is g^privateKey mod p
-  def publicKey: BigInt = {
-    expMod(g, privateKey, p)
-  }
+  val publicKey: BigInt = expMod(g, privateKey, p)
 
-  // multiply all the keys in the group of participants, starting with our own
-  def sharedSecret: BigInt = {
-    this.publicKey * peerPublicKeys.foldLeft(1: BigInt)((a, b) => a * b)
-  }
+  // initialize to public key
+  var secret: BigInt = publicKey
 
-  // append the new key to the list of keys we have.
-  // (this operation should really only be undertaken by the
-  // DiffieHellman.doKeyExchange function to prevent duplicate
-  // key sharing)
-  private def addPeerPublicKey(key: BigInt) = {
-    peerPublicKeys :+= key
+  // take what we have already and raise it to the power of our private key,
+  // modulo p.
+  def combineSecretWithPrivateKey(): Unit = {
+    secret = expMod(secret, privateKey, p)
   }
 
   // calculates a^b mod c
@@ -47,21 +37,29 @@ object DiffieHellman {
     BigInt.probablePrime(n, new Random())
   }
 
+  def rotate[T](list: List[T]): List[T] = {
+    (list.head :: list.tail.reverse).reverse
+  }
+
   // share all public keys with all participants,
   // for any number of participants
-  def doKeyExchange(participants: Array[DiffieHellman]): Unit = {
-    // first reset all the key lists, in case we're calling
-    // this function repeatedly
-    for (participant <- participants) {
-      participant.resetKeyList
+  def doKeyExchange(participants: List[DiffieHellman]): Boolean = {
+    for (i <- 1 until participants.length) {
+
+      // get and rotate the intermediates
+      val intermediates = participants.map(p => p.secret)
+
+      // rotate the intermediates
+      val rotated = rotate(intermediates)
+
+      // map them into the participants
+      (participants, rotated).zipped.map((p, i) => p.secret = i)
+
+      // mix with participant's private key
+      participants.map(p => p.combineSecretWithPrivateKey())
     }
 
-    for {
-      keySender: DiffieHellman <- participants
-      keyReciever: DiffieHellman <- participants
-      if keySender != keyReciever
-    } yield {
-      keyReciever.addPeerPublicKey(keySender.publicKey)
-    }
+    // return true if all secret keys are equal
+    participants.map(p => p.secret).distinct.length == 1
   }
 }
