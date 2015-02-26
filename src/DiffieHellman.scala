@@ -10,8 +10,7 @@ class DiffieHellman (val p: BigInt, val g: Int) {
   // (re-generating the private key breaks the algorithm)
   private val privateKey: BigInt = this.random(1024)
 
-  // initialize the list in which we will store all
-  // our shared keys
+  // initialize the list in which we will store all our shared keys
   var peerPublicKeys: Array[BigInt] = resetKeyList
   def resetKeyList = Array[BigInt]()
 
@@ -20,8 +19,7 @@ class DiffieHellman (val p: BigInt, val g: Int) {
     expMod(g, privateKey, p)
   }
 
-  // multiply all the keys in the group of participants,
-  // starting with our own
+  // multiply all the keys in the group of participants, starting with our own
   def sharedSecret: BigInt = {
     this.publicKey * peerPublicKeys.foldLeft(1: BigInt)((a, b) => a * b)
   }
