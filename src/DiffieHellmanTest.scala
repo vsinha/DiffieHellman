@@ -15,13 +15,12 @@ object DiffieHellmanTest extends App {
   // add to an array for convenience
   var participants = List(alice, bob, carol, david)
 
-  println("public keys:   " + participants.map(x => x.publicKey).mkString(" "))
+  println("Public Keys:     " + participants.map(x => x.publicKey).mkString(" "))
 
   // share all public keys with all participants
   val result = DiffieHellman.doKeyExchange(participants)
 
-  println("secret:        " + participants.map(p => p.secret).mkString(" "))
-
+  println("Shared Secrets:  " + participants.map(p => p.secret).mkString(" "))
 
   println("All keys shared? " + result)
 }

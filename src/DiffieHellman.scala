@@ -16,30 +16,20 @@ class DiffieHellman (val p: BigInt, val g: Int, val name: String) {
   // initialize to public key
   var secret: BigInt = publicKey
 
-  // take what we have already and raise it to the power of our private key,
-  // modulo p.
-  def combineSecretWithPrivateKey(): Unit = {
-    secret = expMod(secret, privateKey, p)
-  }
+  // take what we have already and raise it to the power of our private key modulo p.
+  def combineSecretWithPrivateKey(): Unit = secret = expMod(secret, privateKey, p)
 
   // calculates a^b mod c
-  private def expMod(a: BigInt, b: BigInt, c: BigInt): BigInt = {
-    a.modPow(b, c)
-  }
+  private def expMod(a: BigInt, b: BigInt, c: BigInt): BigInt = a.modPow(b, c)
 
-  private def random(n: Int): BigInt = {
-    BigInt(n, new Random())
-  }
+  // generates a random number for a given number of bits
+  private def random(n: Int): BigInt = BigInt(n, new Random())
 }
 
 object DiffieHellman {
-  def randomPrime(n: Int): BigInt = {
-    BigInt.probablePrime(n, new Random())
-  }
+  def randomPrime(n: Int): BigInt = BigInt.probablePrime(n, new Random())
 
-  def rotate[T](list: List[T]): List[T] = {
-    (list.head :: list.tail.reverse).reverse
-  }
+  def rotate[T](list: List[T]): List[T] = (list.head :: list.tail.reverse).reverse
 
   // share all public keys with all participants,
   // for any number of participants
@@ -56,7 +46,7 @@ object DiffieHellman {
       (participants, rotated).zipped.map((p, i) => p.secret = i)
 
       // mix with participant's private key
-      participants.map(p => p.combineSecretWithPrivateKey())
+      participants.foreach(p => p.combineSecretWithPrivateKey())
     }
 
     // return true if all secret keys are equal
